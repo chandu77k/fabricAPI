@@ -56,3 +56,19 @@ def get_eula():
 @app.get("/privacy-policy")
 def get_privacy_policy():
     return FileResponse("privacy-policy.html", media_type="text/html")
+
+@app.get("/quickbooks/callback")
+async def quickbooks_callback(request: Request):
+    params = dict(request.query_params)
+    code = params.get("code")
+    state = params.get("state")
+    realm_id = params.get("realmId")  # Company ID
+
+    if not code:
+        return JSONResponse(status_code=400, content={"error": "Missing authorization code"})
+
+    return {
+        "auth_code": code,
+        "state": state,
+        "realmId": realm_id
+    }
